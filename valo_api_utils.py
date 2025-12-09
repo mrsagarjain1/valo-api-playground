@@ -142,12 +142,12 @@ def cookie_reauth(cookies_file: str = "cookies.json") -> Optional[dict]:
     res = session.get(REAUTH_URL, allow_redirects=False)
     location = res.headers.get("Location", "")
 
-    # Failure → redirect to login page
+    # Failure - redirect to login page
     if "authenticate.riotgames.com" in location:
-        print("❌ Cookies expired. Need new cookies.")
+        print("Cookies expired. Need new cookies.")
         return None
 
-    # Success → extract tokens from redirect fragment
+    # Success - extract tokens from redirect fragment
     fragment = urlparse(location).fragment
     params = dict(parse_qsl(fragment))
 
@@ -158,5 +158,5 @@ def cookie_reauth(cookies_file: str = "cookies.json") -> Optional[dict]:
         "token_type": str(params.get("token_type", ""))
     }
 
-    print("\n🎉 Fresh tokens obtained")
+    print("\nFresh tokens obtained")
     return tokens

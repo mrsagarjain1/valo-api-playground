@@ -83,7 +83,7 @@
         "price": "0 VP"
       }
     ],
-    "time_remaining": "2d 16h 10m"
+    "time_remaining": "2d 15h 33m"
   },
   "night_market": null,
   "accessory_store": [
@@ -108,6 +108,6 @@
       "price": "4000 KC"
     }
   ],
-  "daily_shop_time_remaining": "18h 10m",
-  "accessory_store_time_remaining": "18h 10m"
+  "daily_shop_time_remaining": "17h 33m",
+  "accessory_store_time_remaining": "17h 33m"
 }
