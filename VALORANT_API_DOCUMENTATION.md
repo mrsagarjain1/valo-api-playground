@@ -1,974 +1,173 @@
-# Valorant API Documentation
+# Valorant API Documentation (Unofficial)
 
-Complete documentation of all Valorant API endpoints from https://valapidocs.techchrism.me/
+Source: [https://valapidocs.techchrism.me/](https://valapidocs.techchrism.me/)
 
-**Status:** Unofficial - These endpoints are not officially supported by Riot Games, but documented for educational purposes.
+This is a site dedicated to documenting the Valorant API endpoints the client uses internally. These endpoints are not officially supported. However, as long as you use common sense and don't do anything a Riot employee would frown at, you won't get banned.
 
----
+**Discord:** [https://discord.gg/a9yzrw3KAm](https://discord.gg/a9yzrw3KAm)
 
 ## Table of Contents
 
-1. [Authentication Endpoints](#authentication-endpoints)
-2. [PVP Endpoints](#pvp-endpoints)
-3. [Party Endpoints](#party-endpoints)
-4. [Store Endpoints](#store-endpoints)
-5. [Pre-Game Endpoints](#pre-game-endpoints)
-6. [Current Game Endpoints](#current-game-endpoints)
-7. [Contract Endpoints](#contract-endpoints)
-8. [Local Endpoints](#local-endpoints)
-9. [Local Endpoints - Chat](#local-endpoints---chat)
-10. [XMPP](#xmpp)
+- [Getting Started](#getting-started)
+- [Authentication Endpoints](#authentication-endpoints)
+- [PVP Endpoints](#pvp-endpoints)
+- [Party Endpoints](#party-endpoints)
+- [Store Endpoints](#store-endpoints)
+- [Pre-Game Endpoints](#pre-game-endpoints)
+- [Current Game Endpoints](#current-game-endpoints)
+- [Contract Endpoints](#contract-endpoints)
+- [Local Endpoints](#local-endpoints)
+- [Local Endpoints - Chat](#local-endpoints---chat)
+- [XMPP](#xmpp)
 
 ---
 
-## Common Variables & Headers
+## Getting Started
 
-### Shards
+One of the easiest ways to get started and get a feel for what kinds of data you can get from the apis is to play around with the requests yourself in a REST client like Insomnia.
 
-The shard depends on where the Riot account was created:
+1.  Download and install Insomnia here: [https://insomnia.rest/download](https://insomnia.rest/download)
+    *   Recent updates to Insomnia require a Kong account. For a fork of Insomnia that does not require an account, see [https://github.com/ArchGPT/insomnium](https://github.com/ArchGPT/insomnium)
+2.  [Add insomnia-plugin-valorant](insomnia://plugins/install?name=insomnia-plugin-valorant)
+    *   This plugin autocompletes useful API placeholders such as auth info, lockfile data, and player info. For more info, see [https://github.com/techchrism/insomnia-plugin-valorant](https://github.com/techchrism/insomnia-plugin-valorant)
+3.  [Import Workspace](insomnia://app/import?uri=https://valapidocs.techchrism.me/insomnia.json)
 
-| Shard | Regions |
-|-------|---------|
-| na | North America, LATAM, Brazil |
-| pbe | PBE (NA) |
-| eu | Europe |
-| ap | Asia Pacific |
-| kr | Korea |
+You can right-click a request in Insomnia and click "Generate Code" to see how to make the request in the language and library of your choice.
 
-**Obtaining Shard:**
-- Locally: Find in `%LocalAppData%\VALORANT\Saved\Logs\ShooterGame.log`
-- Remotely: Use [Riot Geo Endpoint](#put-riot-geo) with auth tokens
+## Investigating Endpoints
 
-### Required Headers
-
-All PVP, Party, Store, Pre-Game, and Current Game endpoints require:
-
-```
-X-Riot-ClientPlatform: {client platform}
-X-Riot-ClientVersion: {client version}
-X-Riot-Entitlements-JWT: {entitlement token}
-Authorization: Bearer {auth token}
-```
-
-### Client Platform
-
-Base-64 encoded JSON (this value works for all requests):
-```
-ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9
-```
-
-Decodes to:
-```json
-{
-    "platformType": "PC",
-    "platformOS": "Windows",
-    "platformOSVersion": "10.0.19042.1.256.64bit",
-    "platformChipset": "Unknown"
-}
-```
-
-### Client Version
-
-Obtain from:
-- ShooterGame log at `%LocalAppData%\VALORANT\Saved\Logs\ShooterGame.log`
-- [Sessions Local Endpoint](#get-sessions)
-- [Third-party API](https://dash.valorant-api.com/endpoints/version)
+Endpoints are commonly found from the ShooterGame log located at `%LocalAppData%\VALORANT\Saved\Logs\ShooterGame.log`. You can use [Valorant Log Endpoint Scraper](https://github.com/techchrism/valorant-log-endpoint-scraper) to quickly export a list of endpoints and other urls found in the log.
 
 ---
 
 ## Authentication Endpoints
 
-### POST Auth Cookies
-**URL:** `https://auth.riotgames.com/api/v1/authorization`
-
-Get access token using username and password.
-
----
-
-### PUT Auth Request
-**URL:** `https://auth.riotgames.com/api/v1/authorization`
-
-Complete multi-factor authentication (if needed).
-
----
-
-### PUT Multi-Factor Authentication
-**URL:** `https://auth.riotgames.com/api/v1/authorization`
-
-Handle MFA challenges during authentication.
-
----
-
-### GET Cookie Reauth
-**URL:** `https://auth.riotgames.com/authorize?redirect_uri=https%3A%2F%2Fplayvalorant.com%2Fopt_in&client_id=play-valorant-web-prod&response_type=token%20id_token&nonce=1&scope=account%20openid`
-
-**Purpose:** Get fresh access and ID tokens from existing cookies
-
-**Headers Required:**
-- Cookie: ssid, sub, tdid, csid, clid (from cookies.json)
-
-**Response:**
-- `access_token`: Bearer token for API requests
-- `id_token`: ID token for Riot Geo endpoint
-- `expires_in`: Token expiration time (seconds)
-- `token_type`: "Bearer"
-
-**Usage:** Automatically handles cookie refresh without needing username/password
-
----
-
-### POST Entitlement
-**URL:** `https://entitlements.auth.riotgames.com/api/token/v1`
-
-**Headers:**
-```
-Authorization: Bearer {access_token}
-Content-Type: application/json
-```
-
-**Body:** `{}`
-
-**Response:**
-```json
-{
-    "entitlements_token": "JWT_TOKEN"
-}
-```
-
-**Purpose:** Get entitlement token for Valorant API requests
-
----
-
-### GET Player Info
-**URL:** `https://auth.riotgames.com/userinfo`
-
-**Headers:**
-```
-Authorization: Bearer {access_token}
-```
-
-**Response:**
-```json
-{
-    "sub": "PUUID",
-    "email": "email@example.com",
-    ...
-}
-```
-
-**Purpose:** Get current player's PUUID and basic info
-
----
-
-### PUT Riot Geo
-**URL:** `https://riot-geo.pas.si.riotgames.com/pas/v1/product/valorant`
-
-**Headers:**
-```
-Authorization: Bearer {access_token}
-```
-
-**Body:**
-```json
-{
-    "id_token": "{id_token}"
-}
-```
-
-**Response:**
-```json
-{
-    "affinities": {
-        "live": "na"
-    }
-}
-```
-
-**Purpose:** Get player's region/shard
-
----
-
-### GET PAS Token
-**URL:** `https://riot-entitlements.my.microsoftonline.com/...`
-
-**Purpose:** Get PAS (Player Authentication Service) token
-
----
-
-### GET Riot Client Config
-**URL:** `https://valorant-client-config.playvalorant.com/client-config/v2`
-
-**Purpose:** Get Valorant client configuration
-
----
+| Endpoint | Description |
+| :--- | :--- |
+| [POST Auth Cookies](https://valapidocs.techchrism.me/endpoint/auth-cookies) | Prepare cookies for auth request |
+| [PUT Auth Request](https://valapidocs.techchrism.me/endpoint/auth-request) | Perform the main authorization |
+| [PUT Multi-Factor Authentication](https://valapidocs.techchrism.me/endpoint/multi-factor-authentication) | Submit 2FA code |
+| [GET Cookie Reauth](https://valapidocs.techchrism.me/endpoint/cookie-reauth) | Re-authenticate using existing cookies |
+| [POST Entitlement](https://valapidocs.techchrism.me/endpoint/entitlement) | Get entitlement token |
+| [GET Player Info](https://valapidocs.techchrism.me/endpoint/player-info) | Get player info (PUUID, etc.) |
+| [PUT Riot Geo](https://valapidocs.techchrism.me/endpoint/riot-geo) | Get region/shard info |
+| [GET PAS Token](https://valapidocs.techchrism.me/endpoint/pas-token) | Get PAS token |
+| [GET Riot Client Config](https://valapidocs.techchrism.me/endpoint/riot-client-config) | Get client config |
 
 ## PVP Endpoints
 
-### GET Fetch Content
-**URL:** `https://pd.{shard}.a.pvp.net/content-service/v3/content`
-
-**Purpose:** Fetch game content (agents, weapons, maps, etc.)
-
----
-
-### GET Account XP
-**URL:** `https://pd.{shard}.a.pvp.net/account-xp/v1/players/{puuid}`
-
-**Parameters:**
-- `{shard}`: Player's shard
-- `{puuid}`: Player's UUID
-
-**Purpose:** Get player's account level and XP
-
----
-
-### GET Player Loadout
-**URL:** `https://pd.{shard}.a.pvp.net/loadout/v1/players/{puuid}`
-
-**Parameters:**
-- `{shard}`: Player's shard
-- `{puuid}`: Player's UUID
-
-**Purpose:** Get player's current loadout (skins, sprays, cards, etc.)
-
----
-
-### PUT Set Player Loadout
-**URL:** `https://pd.{shard}.a.pvp.net/loadout/v1/players/{puuid}/loadout`
-
-**Parameters:**
-- `{shard}`: Player's shard
-- `{puuid}`: Player's UUID
-
-**Purpose:** Update player's loadout
-
----
-
-### GET Player MMR
-**URL:** `https://pd.{shard}.a.pvp.net/mmr/v1/players/{puuid}`
-
-**Parameters:**
-- `{shard}`: Player's shard
-- `{puuid}`: Player's UUID
-
-**Response:**
-```typescript
-type PlayerMMRResponse = {
-    Version: number;
-    Subject: string; // Player UUID
-    NewPlayerExperienceFinished: boolean;
-    QueueSkills: {
-        [queueName: string]: {
-            TotalGamesNeededForRating: number;
-            TotalGamesNeededForLeaderboard: number;
-            CurrentSeasonGamesNeededForRating: number;
-            SeasonalInfoBySeasonID: {
-                [seasonId: string]: {
-                    SeasonID: string;
-                    NumberOfWins: number;
-                    NumberOfWinsWithPlacements: number;
-                    NumberOfGames: number;
-                    Rank: number;
-                    CapstoneWins: number;
-                    LeaderboardRank: number;
-                    CompetitiveTier: number;
-                    RankedRating: number;
-                    WinsByTier: { [tier: string]: number } | null;
-                    GamesNeededForRating: number;
-                    TotalWinsNeededForRank: number;
-                };
-            };
-        };
-    };
-    LatestCompetitiveUpdate: {
-        MatchID: string;
-        MapID: string;
-        SeasonID: string;
-        MatchStartTime: number;
-        TierAfterUpdate: number;
-        TierBeforeUpdate: number;
-        RankedRatingAfterUpdate: number;
-        RankedRatingBeforeUpdate: number;
-        RankedRatingEarned: number;
-        RankedRatingPerformanceBonus: number;
-        CompetitiveMovement: "MOVEMENT_UNKNOWN";
-        AFKPenalty: number;
-    };
-    IsLeaderboardAnonymized: boolean;
-    IsActRankBadgeHidden: boolean;
-};
-```
-
-**Purpose:** Get player's MMR, ranking, and competitive history
-
----
-
-### GET Match History
-**URL:** `https://pd.{shard}.a.pvp.net/match-history/v1/history/{puuid}?startIndex={startIndex}&endIndex={endIndex}&queue={queue}`
-
-**Parameters:**
-- `{shard}`: Player's shard
-- `{puuid}`: Player's UUID
-
-**Query Parameters:**
-- `startIndex` (optional): Default 0
-- `endIndex` (optional): Default 20
-- `queue` (optional): Filter by queue
-
-**Response:**
-```typescript
-type MatchHistoryResponse = {
-    Subject: string; // Player UUID
-    BeginIndex: number;
-    EndIndex: number;
-    Total: number;
-    History: {
-        MatchID: string;
-        GameStartTime: number; // Milliseconds since epoch
-        QueueID: string;
-    }[];
-};
-```
-
-**Purpose:** Get player's recent match history
-
----
-
-### GET Match Details
-**URL:** `https://pd.{shard}.a.pvp.net/match-details/v1/matches/{matchID}`
-
-**Parameters:**
-- `{shard}`: Player's shard
-- `{matchID}`: Match ID
-
-**Response:** Comprehensive match data including:
-- Match info (map, queue, game mode, duration)
-- Players (all players' stats, kills, deaths, assists)
-- Round results (each round's outcome)
-- Kill details (timestamps, locations, weapons)
-- Economy (weapon purchases per round)
-- Behavior factors (AFK, FF, etc.)
-
-**Purpose:** Get detailed information about a specific match
-
----
-
-### GET Competitive Updates
-**URL:** `https://pd.{shard}.a.pvp.net/mmr/v1/players/{puuid}/competitiveupdates?startIndex={startIndex}&endIndex={endIndex}&queue={queue}`
-
-**Parameters:**
-- `{shard}`: Player's shard
-- `{puuid}`: Player's UUID
-
-**Query Parameters:**
-- `startIndex` (optional)
-- `endIndex` (optional)
-- `queue` (optional)
-
-**Response:**
-```typescript
-type CompetitiveUpdatesResponse = {
-    Version: number;
-    Subject: string; // Player UUID
-    Matches: {
-        MatchID: string;
-        MapID: string;
-        SeasonID: string;
-        MatchStartTime: number;
-        TierAfterUpdate: number;
-        TierBeforeUpdate: number;
-        RankedRatingAfterUpdate: number;
-        RankedRatingBeforeUpdate: number;
-        RankedRatingEarned: number;
-        RankedRatingPerformanceBonus: number;
-        CompetitiveMovement: "MOVEMENT_UNKNOWN";
-        AFKPenalty: number;
-    }[];
-};
-```
-
-**Purpose:** Get recent matches and how they affected ranking
-
----
-
-### GET Leaderboard
-**URL:** `https://pd.{shard}.a.pvp.net/mmr/v1/leaderboards/affinity/na/queue/competitive/season/{seasonId}?startIndex={startIndex}&size={size}&query={query}`
-
-**Parameters:**
-- `{shard}`: Player's shard
-- `{seasonId}`: Season ID
-
-**Query Parameters:**
-- `startIndex` (required)
-- `size` (required): Number of entries to retrieve
-- `query` (optional): Username to search for
-
-**Response:**
-```typescript
-type LeaderboardResponse = {
-    Deployment: string;
-    QueueID: string;
-    SeasonID: string;
-    Players: {
-        PlayerCardID: string;
-        TitleID: string;
-        IsBanned: boolean;
-        IsAnonymized: boolean;
-        puuid: string;
-        gameName: string;
-        tagLine: string;
-        leaderboardRank: number;
-        rankedRating: number;
-        numberOfWins: number;
-        competitiveTier: number;
-    }[];
-    totalPlayers: number;
-    immortalStartingPage: number;
-    immortalStartingIndex: number;
-    topTierRRThreshold: number;
-    tierDetails: { [tier: string]: {...} };
-    startIndex: number;
-    query: string;
-};
-```
-
-**Purpose:** Get competitive leaderboard (top 500 players - Immortal/Radiant)
-
----
-
-### GET Penalties
-**URL:** `https://pd.{shard}.a.pvp.net/restrictions/v2/penalties`
-
-**Purpose:** Get player's behavioral penalties (AFK, FF, etc.)
-
----
-
-### GET Config
-**URL:** `https://pd.{shard}.a.pvp.net/api/v1/config/{regionOrShard}`
-
-**Purpose:** Get game configuration for a region
-
----
-
-### PUT Name Service
-**URL:** `https://pd.{shard}.a.pvp.net/name-service/v2/players`
-
-**Body:**
-```json
-["PUUID1", "PUUID2", ...]
-```
-
-**Response:**
-```typescript
-type NameServiceResponse = {
-    DisplayName: string;
-    Subject: string; // Player UUID
-    GameName: string;
-    TagLine: string;
-}[];
-```
-
-**Purpose:** Convert PUUIDs to player names (works in reverse - not for name→PUUID)
-
----
+| Endpoint | Description |
+| :--- | :--- |
+| [GET Fetch Content](https://valapidocs.techchrism.me/endpoint/fetch-content) | Get content (seasons, acts, events) |
+| [GET Account XP](https://valapidocs.techchrism.me/endpoint/account-xp) | Get account XP and level |
+| [GET Player Loadout](https://valapidocs.techchrism.me/endpoint/player-loadout) | Get current player loadout |
+| [PUT Set Player Loadout](https://valapidocs.techchrism.me/endpoint/set-player-loadout) | Set player loadout |
+| [GET Player MMR](https://valapidocs.techchrism.me/endpoint/player-mmr) | Get player MMR details |
+| [GET Match History](https://valapidocs.techchrism.me/endpoint/match-history) | Get match history |
+| [GET Match Details](https://valapidocs.techchrism.me/endpoint/match-details) | Get details of a specific match |
+| [GET Competitive Updates](https://valapidocs.techchrism.me/endpoint/competitive-updates) | Get recent competitive matches and MMR changes |
+| [GET Leaderboard](https://valapidocs.techchrism.me/endpoint/leaderboard) | Get ranked leaderboard |
+| [GET Penalties](https://valapidocs.techchrism.me/endpoint/penalties) | Get player penalties |
+| [GET Config](https://valapidocs.techchrism.me/endpoint/config) | Get config |
+| [PUT Name Service](https://valapidocs.techchrism.me/endpoint/name-service) | Update player name/tagline |
 
 ## Party Endpoints
 
-### GET Party
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/parties/v1/parties/{partyId}`
-
-**Purpose:** Get party information
-
----
-
-### GET Party Player
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/parties/v1/players/{puuid}`
-
-**Purpose:** Get current player's party info
-
----
-
-### DELETE Party Remove Player
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/parties/v1/parties/{partyId}/members/{puuid}`
-
-**Purpose:** Remove player from party
-
----
-
-### POST Party Set Member Ready
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/parties/v1/parties/{partyId}/members/{puuid}/ready`
-
-**Purpose:** Mark player as ready
-
----
-
-### POST Refresh Competitive Tier
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/parties/v1/parties/{partyId}/members/{puuid}/competitivetier`
-
-**Purpose:** Refresh player's competitive tier
-
----
-
-### POST Refresh Player Identity
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/parties/v1/parties/{partyId}/members/{puuid}/identity`
-
-**Purpose:** Refresh player's identity/name
-
----
-
-### POST Refresh Pings
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/parties/v1/parties/{partyId}/members/{puuid}/pings`
-
-**Purpose:** Refresh player's pings (latency)
-
----
-
-### POST Change Queue
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/parties/v1/parties/{partyId}/queue`
-
-**Purpose:** Change party's queue type
-
----
-
-### POST Start Custom Game
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/parties/v1/parties/{partyId}/customgamedata`
-
-**Purpose:** Start a custom game
-
----
-
-### POST Enter Matchmaking Queue
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/parties/v1/parties/{partyId}/matchmaking/join`
-
-**Purpose:** Enter matchmaking queue
-
----
-
-### POST Leave Matchmaking Queue
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/parties/v1/parties/{partyId}/matchmaking/leave`
-
-**Purpose:** Leave matchmaking queue
-
----
-
-### POST Set Party Accessibility
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/parties/v1/parties/{partyId}/accessibility`
-
-**Purpose:** Set party privacy (open/closed)
-
----
-
-### POST Set Custom Game Settings
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/parties/v1/customgamesettings`
-
-**Purpose:** Configure custom game settings
-
----
-
-### POST Party Invite
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/parties/v1/parties/{partyId}/invites`
-
-**Purpose:** Invite player to party
-
----
-
-### POST Party Request
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/parties/v1/parties/{partyId}/requests`
-
-**Purpose:** Send party join request
-
----
-
-### POST Party Decline
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/parties/v1/parties/{partyId}/decline`
-
-**Purpose:** Decline party invitation
-
----
-
-### GET Custom Game Configs
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/customgame/v1/configs`
-
-**Purpose:** Get available custom game configurations
-
----
-
-### GET Party Chat Token
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/chat/v4/parties/{partyId}`
-
-**Purpose:** Get party chat connection token
-
----
-
-### GET Party Voice Token
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/voice/v1/parties/{partyId}`
-
-**Purpose:** Get party voice connection token
-
----
-
-### DELETE Party Disable Code
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/parties/v1/parties/{partyId}/codes`
-
-**Purpose:** Disable party invite code
-
----
-
-### POST Party Generate Code
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/parties/v1/parties/{partyId}/codes`
-
-**Purpose:** Generate party invite code
-
----
-
-### POST Party Join By Code
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/parties/v1/parties/join/{partyCode}`
-
-**Purpose:** Join party using invite code
-
----
+| Endpoint | Description |
+| :--- | :--- |
+| [GET Party](https://valapidocs.techchrism.me/endpoint/party) | Get current party info |
+| [GET Party Player](https://valapidocs.techchrism.me/endpoint/party-player) | Get party player info |
+| [DELETE Party Remove Player](https://valapidocs.techchrism.me/endpoint/party-remove-player) | Remove player from party |
+| [POST Party Set Member Ready](https://valapidocs.techchrism.me/endpoint/party-set-member-ready) | Set ready status |
+| [POST Refresh Competitive Tier](https://valapidocs.techchrism.me/endpoint/refresh-competitive-tier) | Refresh competitive tier |
+| [POST Refresh Player Identity](https://valapidocs.techchrism.me/endpoint/refresh-player-identity) | Refresh player identity |
+| [POST Refresh Pings](https://valapidocs.techchrism.me/endpoint/refresh-pings) | Refresh pings |
+| [POST Change Queue](https://valapidocs.techchrism.me/endpoint/change-queue) | Change matchmaking queue |
+| [POST Start Custom Game](https://valapidocs.techchrism.me/endpoint/start-custom-game) | Start a custom game |
+| [POST Enter Matchmaking Queue](https://valapidocs.techchrism.me/endpoint/enter-matchmaking-queue) | Enter queue |
+| [POST Leave Matchmaking Queue](https://valapidocs.techchrism.me/endpoint/leave-matchmaking-queue) | Leave queue |
+| [POST Set Party Accessibility](https://valapidocs.techchrism.me/endpoint/set-party-accessibility) | Set party open/closed |
+| [POST Set Custom Game Settings](https://valapidocs.techchrism.me/endpoint/set-custom-game-settings) | Set custom game options |
+| [POST Party Invite](https://valapidocs.techchrism.me/endpoint/party-invite) | Invite player to party |
+| [POST Party Request](https://valapidocs.techchrism.me/endpoint/party-request) | Request to join party |
+| [POST Party Decline](https://valapidocs.techchrism.me/endpoint/party-decline) | Decline party request |
+| [GET Custom Game Configs](https://valapidocs.techchrism.me/endpoint/custom-game-configs) | Get custom game configs |
+| [GET Party Chat Token](https://valapidocs.techchrism.me/endpoint/party-chat-token) | Get party chat token |
+| [GET Party Voice Token](https://valapidocs.techchrism.me/endpoint/party-voice-token) | Get party voice token |
+| [DELETE Party Disable Code](https://valapidocs.techchrism.me/endpoint/party-disable-code) | Disable party code |
+| [POST Party Generate Code](https://valapidocs.techchrism.me/endpoint/party-generate-code) | Generate party code |
+| [POST Party Join By Code](https://valapidocs.techchrism.me/endpoint/party-join-by-code) | Join party by code |
 
 ## Store Endpoints
 
-### GET Prices
-**URL:** `https://pd.{shard}.a.pvp.net/store-front/v1/prices`
-
-**Purpose:** Get current store prices for items
-
----
-
-### GET Storefront
-**URL:** `https://pd.{shard}.a.pvp.net/store-front/v1/storefront/{puuid}`
-
-**Parameters:**
-- `{shard}`: Player's shard
-- `{puuid}`: Player's UUID
-
-**Purpose:** Get player's current store rotation
-
----
-
-### GET Wallet
-**URL:** `https://pd.{shard}.a.pvp.net/store-front/v1/wallet/{puuid}`
-
-**Parameters:**
-- `{shard}`: Player's shard
-- `{puuid}`: Player's UUID
-
-**Purpose:** Get player's currency balance (VP, Radianite)
-
----
-
-### GET Owned Items
-**URL:** `https://pd.{shard}.a.pvp.net/store-front/v1/owned-items/{puuid}`
-
-**Parameters:**
-- `{shard}`: Player's shard
-- `{puuid}`: Player's UUID
-
-**Purpose:** Get player's owned cosmetics
-
----
+| Endpoint | Description |
+| :--- | :--- |
+| [GET Prices](https://valapidocs.techchrism.me/endpoint/prices) | Get item prices |
+| [GET Storefront](https://valapidocs.techchrism.me/endpoint/storefront) | Get player store (daily shop, bundle) |
+| [GET Wallet](https://valapidocs.techchrism.me/endpoint/wallet) | Get player wallet (VP, Radianite) |
+| [GET Owned Items](https://valapidocs.techchrism.me/endpoint/owned-items) | Get owned items |
 
 ## Pre-Game Endpoints
 
-### GET Pre-Game Player
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/pregame/v1/players/{puuid}`
-
-**Purpose:** Get current player's pre-game state
-
----
-
-### GET Pre-Game Match
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/pregame/v1/matches/{matchId}`
-
-**Purpose:** Get pre-game match information
-
----
-
-### GET Pre-Game Loadouts
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/pregame/v1/matches/{matchId}/loadouts`
-
-**Purpose:** Get all players' loadouts in pre-game
-
----
-
-### POST Select Character
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/pregame/v1/matches/{matchId}/select/{characterId}`
-
-**Purpose:** Select agent in pre-game
-
----
-
-### POST Lock Character
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/pregame/v1/matches/{matchId}/lock/{characterId}`
-
-**Purpose:** Lock selected agent
-
----
-
-### POST Pre-Game Quit
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/pregame/v1/matches/{matchId}/quit`
-
-**Purpose:** Quit pre-game
-
----
+| Endpoint | Description |
+| :--- | :--- |
+| [GET Pre-Game Player](https://valapidocs.techchrism.me/endpoint/pre-game-player) | Get pre-game player info |
+| [GET Pre-Game Match](https://valapidocs.techchrism.me/endpoint/pre-game-match) | Get pre-game match info |
+| [GET Pre-Game Loadouts](https://valapidocs.techchrism.me/endpoint/pre-game-loadouts) | Get pre-game loadouts |
+| [POST Select Character](https://valapidocs.techchrism.me/endpoint/select-character) | Select agent |
+| [POST Lock Character](https://valapidocs.techchrism.me/endpoint/lock-character) | Lock agent |
+| [POST Pre-Game Quit](https://valapidocs.techchrism.me/endpoint/pre-game-quit) | Quit pre-game (dodge) |
 
 ## Current Game Endpoints
 
-### GET Current Game Player
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/core-game/v1/players/{puuid}`
-
-**Purpose:** Get current player's in-game state
-
----
-
-### GET Current Game Match
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/core-game/v1/matches/{matchId}`
-
-**Purpose:** Get current match information
-
----
-
-### GET Current Game Loadouts
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/core-game/v1/matches/{matchId}/loadouts`
-
-**Purpose:** Get all players' in-game loadouts
-
----
-
-### POST Current Game Quit
-**URL:** `https://glz-{region}-1.{shard}.a.pvp.net/core-game/v1/matches/{matchId}/quit`
-
-**Purpose:** Quit current match
-
----
+| Endpoint | Description |
+| :--- | :--- |
+| [GET Current Game Player](https://valapidocs.techchrism.me/endpoint/current-game-player) | Get current game player info |
+| [GET Current Game Match](https://valapidocs.techchrism.me/endpoint/current-game-match) | Get current game match info |
+| [GET Current Game Loadouts](https://valapidocs.techchrism.me/endpoint/current-game-loadouts) | Get current game loadouts |
+| [POST Current Game Quit](https://valapidocs.techchrism.me/endpoint/current-game-quit) | Quit current game |
 
 ## Contract Endpoints
 
-### GET Item Upgrades
-**URL:** `https://pd.{shard}.a.pvp.net/contract-definitions/v3/item-upgrades`
-
-**Purpose:** Get item upgrade definitions
-
----
-
-### GET Contracts
-**URL:** `https://pd.{shard}.a.pvp.net/contracts/v1/contracts/{puuid}`
-
-**Parameters:**
-- `{shard}`: Player's shard
-- `{puuid}`: Player's UUID
-
-**Purpose:** Get player's active contracts (battle pass, agent contracts)
-
----
-
-### POST Activate Contract
-**URL:** `https://pd.{shard}.a.pvp.net/contracts/v1/contracts/{puuid}/activate`
-
-**Purpose:** Activate a new contract
-
----
+| Endpoint | Description |
+| :--- | :--- |
+| [GET Item Upgrades](https://valapidocs.techchrism.me/endpoint/item-upgrades) | Get item upgrades |
+| [GET Contracts](https://valapidocs.techchrism.me/endpoint/contracts) | Get contracts progress |
+| [POST Activate Contract](https://valapidocs.techchrism.me/endpoint/activate-contract) | Activate a contract |
 
 ## Local Endpoints
 
-**Note:** These endpoints require a running Valorant client on `127.0.0.1` with a lockfile
-
-### GET Local Help
-**URL:** `https://127.0.0.1:{port}/help`
-
-**Purpose:** Get help information from local client
-
----
-
-### GET Sessions
-**URL:** `https://127.0.0.1:{port}/entitlements/v1/token`
-
-**Purpose:** Get current session tokens and client version
-
-**Response:**
-```json
-{
-    "accessToken": "TOKEN",
-    "entitlementsToken": "TOKEN",
-    "clientVersion": "RELEASE-VERSION"
-}
-```
-
----
-
-### GET RSO User Info
-**URL:** `https://127.0.0.1:{port}/rso-auth/v1/authorization`
-
-**Purpose:** Get RSO (Riot Sign On) user information
-
----
-
-### GET Client Region
-**URL:** `https://127.0.0.1:{port}/rso-auth/v1/authorization`
-
-**Purpose:** Get client region settings
-
----
-
-### GET Account Alias
-**URL:** `https://127.0.0.1:{port}/chat/v1/session`
-
-**Purpose:** Get account alias/player name
-
----
-
-### GET Entitlements Token
-**URL:** `https://127.0.0.1:{port}/entitlements/v1/token`
-
-**Purpose:** Get fresh entitlements token
-
----
-
-### GET Chat Session
-**URL:** `https://127.0.0.1:{port}/chat/v1/session`
-
-**Purpose:** Get chat session information
-
----
-
-### GET Friends
-**URL:** `https://127.0.0.1:{port}/chat/v4/friends`
-
-**Purpose:** Get friends list
-
----
-
-### POST Send Friend Request
-**URL:** `https://127.0.0.1:{port}/chat/v4/friends/add/{gameName}/{tagLine}`
-
-**Purpose:** Send friend request
-
----
-
-### DELETE Remove Friend Request
-**URL:** `https://127.0.0.1:{port}/chat/v4/friends/{puuid}`
-
-**Purpose:** Remove friend
-
----
-
-### GET Presence
-**URL:** `https://127.0.0.1:{port}/chat/v4/presence`
-
-**Purpose:** Get online presence for friends
-
----
-
-### GET Friend Requests
-**URL:** `https://127.0.0.1:{port}/chat/v4/friend-requests`
-
-**Purpose:** Get incoming friend requests
-
----
-
-### GET Local Swagger Docs
-**URL:** `https://127.0.0.1:{port}/api-docs/swagger.json`
-
-**Purpose:** Get local API documentation
-
----
-
-### WSS Local WebSocket
-**URL:** `wss://127.0.0.1:{port}/chat`
-
-**Purpose:** WebSocket connection for real-time chat/events
-
----
+| Endpoint | Description |
+| :--- | :--- |
+| [GET Local Help](https://valapidocs.techchrism.me/endpoint/local-help) | Get local help |
+| [GET Sessions](https://valapidocs.techchrism.me/endpoint/sessions) | Get sessions |
+| [GET RSO User Info](https://valapidocs.techchrism.me/endpoint/rso-user-info) | Get RSO user info |
+| [GET Client Region](https://valapidocs.techchrism.me/endpoint/client-region) | Get client region |
+| [GET Account Alias](https://valapidocs.techchrism.me/endpoint/account-alias) | Get account alias |
+| [GET Entitlements Token](https://valapidocs.techchrism.me/endpoint/entitlements-token) | Get entitlements token |
+| [GET Chat Session](https://valapidocs.techchrism.me/endpoint/chat-session) | Get chat session |
+| [GET Friends](https://valapidocs.techchrism.me/endpoint/friends) | Get friends list |
+| [POST Send Friend Request](https://valapidocs.techchrism.me/endpoint/send-friend-request) | Send friend request |
+| [DELETE Remove Friend Request](https://valapidocs.techchrism.me/endpoint/remove-friend-request) | Remove friend request |
+| [GET Presence](https://valapidocs.techchrism.me/endpoint/presence) | Get presence info |
+| [GET Friend Requests](https://valapidocs.techchrism.me/endpoint/friend-requests) | Get friend requests |
+| [GET Local Swagger Docs](https://valapidocs.techchrism.me/endpoint/local-swagger-docs) | Get local swagger docs |
+| [WSS Local WebSocket](https://valapidocs.techchrism.me/endpoint/local-websocket) | Local WebSocket connection |
 
 ## Local Endpoints - Chat
 
-### GET Party Chat Info
-**URL:** `https://127.0.0.1:{port}/chat/v5/participants/parties/{partyId}`
-
-**Purpose:** Get party chat participants
-
----
-
-### GET Pre-Game Chat Info
-**URL:** `https://127.0.0.1:{port}/chat/v5/participants/pregame/{matchId}`
-
-**Purpose:** Get pre-game chat participants
-
----
-
-### GET Current Game Chat Info
-**URL:** `https://127.0.0.1:{port}/chat/v5/participants/coregame/{matchId}`
-
-**Purpose:** Get in-game chat participants
-
----
-
-### GET All Chat Info
-**URL:** `https://127.0.0.1:{port}/chat/v5/conversations`
-
-**Purpose:** Get all active conversations
-
----
-
-### GET Chat Participants
-**URL:** `https://127.0.0.1:{port}/chat/v5/participants/{conversationId}`
-
-**Purpose:** Get chat participants for a conversation
-
----
-
-### POST Send Chat
-**URL:** `https://127.0.0.1:{port}/chat/v5/conversations/{conversationId}/messages`
-
-**Body:**
-```json
-{
-    "message": "Your message here"
-}
-```
-
-**Purpose:** Send chat message
-
----
-
-### GET Chat History
-**URL:** `https://127.0.0.1:{port}/chat/v5/conversations/{conversationId}/messages`
-
-**Purpose:** Get chat history
-
----
+| Endpoint | Description |
+| :--- | :--- |
+| [GET Party Chat Info](https://valapidocs.techchrism.me/endpoint/party-chat-info) | Get party chat info |
+| [GET Pre-Game Chat Info](https://valapidocs.techchrism.me/endpoint/pre-game-chat-info) | Get pre-game chat info |
+| [GET Current Game Chat Info](https://valapidocs.techchrism.me/endpoint/current-game-chat-info) | Get current game chat info |
+| [GET All Chat Info](https://valapidocs.techchrism.me/endpoint/all-chat-info) | Get all chat info |
+| [GET Chat Participants](https://valapidocs.techchrism.me/endpoint/chat-participants) | Get chat participants |
+| [POST Send Chat](https://valapidocs.techchrism.me/endpoint/send-chat) | Send chat message |
+| [GET Chat History](https://valapidocs.techchrism.me/endpoint/chat-history) | Get chat history |
 
 ## XMPP
 
-### TCP XMPP Connection
-**URL:** `tcp://chat.a.pvp.net:5222`
-
-**Protocol:** XMPP (Extensible Messaging and Presence Protocol)
-
-**Purpose:** Real-time messaging and presence updates
-
----
-
-## Resources & Links
-
-- **Official Documentation:** https://valapidocs.techchrism.me/
-- **GitHub:** https://github.com/techchrism/valorant-api-docs
-- **Discord Community:** https://discord.gg/a9yzrw3KAm
-- **Valorant Log Scraper:** https://github.com/techchrism/valorant-log-endpoint-scraper
-
----
-
-## Important Notes
-
-1. **Unofficial API:** These endpoints are not officially supported by Riot Games. Use them responsibly.
-2. **Rate Limiting:** Be respectful with API calls to avoid getting rate limited.
-3. **Terms of Service:** Using these endpoints may violate Riot's Terms of Service. Use at your own risk.
-4. **Authentication:** All remote endpoints require valid auth tokens from cookie reauth or direct auth.
-5. **Regional Endpoints:** PVP endpoints use `pd.{shard}` while party/pre-game/current-game use `glz-{region}-1.{shard}`
-6. **Local Port:** The port number for local endpoints is specified in the Valorant lockfile at `%LocalAppData%\Riot Games\Riot Client\Config\lockfile`
-
----
-
-Last Updated: December 8, 2025
+| Endpoint | Description |
+| :--- | :--- |
+| [TCP XMPP Connection](https://valapidocs.techchrism.me/endpoint/xmpp-connection) | XMPP Connection details |

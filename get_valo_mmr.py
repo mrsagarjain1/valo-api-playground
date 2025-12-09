@@ -63,40 +63,60 @@ def get_tier_name(tier_id: int, season_short_str: str) -> str:
     return name
 
 # Season UUID to Episode/Act mapping (Henrik API format)
+# Source: https://valorant-api.com/v1/seasons
 SEASON_MAP = {
+    # Episode 1
+    "3f61c772-4560-cd3f-5d3f-a7ab5abda6b3": "e1a1",
     "0530b9c4-4980-f2ee-df5d-09864cd00542": "e1a2",
     "46ea6166-4573-1128-9cea-60a15640059b": "e1a3",
+    # Episode 2
     "97b6e739-44cc-ffa7-49ad-398ba502ceb0": "e2a1",
     "ab57ef51-4e59-da91-cc8d-51a5a2b9b8ff": "e2a2",
     "52e9749a-429b-7060-99fe-4595426a0cf7": "e2a3",
-    "16118998-4705-5813-86dd-0292a2439d90": "e3a1",
+    # Episode 3
+    "2a27e5d2-4d30-c9e2-b15a-93b8909a442c": "e3a1",
     "4cb622e1-4244-6da3-7276-8daaf1c01be2": "e3a2",
     "a16955a5-4ad0-f761-5e9e-389df1c892fb": "e3a3",
+    # Episode 4
     "573f53ac-41a5-3a7d-d9ce-d6a6298e5704": "e4a1",
     "d929bc38-4ab6-7da4-94f0-ee84f8ac141e": "e4a2",
     "3e47230a-463c-a301-eb7d-67bb60357d4f": "e4a3",
+    # Episode 5
     "67e373c7-48f7-b422-641b-079ace30b427": "e5a1",
     "7a85de9a-4032-61a9-61d8-f4aa2b4a84b6": "e5a2",
     "aca29595-40e4-01f5-3f35-b1b3d304c96e": "e5a3",
+    # Episode 6
     "9c91a445-4f78-1baa-a3ea-8f8aadf4914d": "e6a1",
     "34093c29-4306-43de-452f-3f944bde22be": "e6a2",
     "2de5423b-4aad-02ad-8d9b-c0a931958861": "e6a3",
-    "4d4ce85a-f26f-d7e1-fb23-f02dc69dc52c": "e7a1",
+    # Episode 7
+    "0981a882-4e7d-371a-70c4-c3b4f46c504a": "e7a1",
     "03dfd004-45d4-ebfd-ab0a-948ce780dac4": "e7a2",
     "4401f9fd-4170-2e4c-4bc3-f3b4d7d150d1": "e7a3",
-    "22d10d66-4d2a-a340-6c54-408c7bd53807": "e8a1",
-    "292f58db-4c17-89a7-b1c0-ba988f0e9d98": "e8a2",
+    # Episode 8
+    "ec876e6c-43e8-fa63-ffc1-2e8d4db25525": "e8a1",
+    "22d10d66-4d2a-a340-6c54-408c7bd53807": "e8a2",
     "4539cac3-47ae-90e5-3d01-b3812ca3274e": "e8a3",
-    "476b0893-4c2e-abd6-c5fe-708facff0772": "e9a1",
-    "4c4b8cff-43eb-13d3-8f14-96b783c90cd2": "e9a2",
+    # Episode 9
+    "52ca6698-41c1-e7de-4008-8994d2221209": "e9a1",
+    "292f58db-4c17-89a7-b1c0-ba988f0e9d98": "e9a2",
     "dcde7346-4085-de4f-c463-2489ed47983b": "e9a3",
-    "476b92e4-88ac-d0ea-4c0f-84838b62b0d7": "e10a1",
-    "1611cbeb-c1e6-d92d-22f6-8a8084e4c5a7": "e10a2",
-    "aef237a0-494d-3a14-a1c8-ec8de84e309c": "e10a3",
-    "ac12e9b3-47e6-9599-8fa1-0bb473e5efc7": "e10a4",
-    "5adc33fa-4f30-2899-f131-6fba64c5dd3a": "e10a5",
-    "4c4bf00b-e78a-7a79-04af-0aa63068e4e2": "e10a6",
-    "ec876e6c-43e8-fa63-ffc1-2e8d4db25525": "e10a7",
+    # V25 (Episode 10) - First half
+    "476b0893-4c2e-abd6-c5fe-708facff0772": "v25a1",
+    "16118998-4705-5813-86dd-0292a2439d90": "v25a2",
+    "aef237a0-494d-3a14-a1c8-ec8de84e309c": "v25a3",
+    # V25 (Episode 10) - Second half
+    "ac12e9b3-47e6-9599-8fa1-0bb473e5efc7": "v25a4",
+    "5adc33fa-4f30-2899-f131-6fba64c5dd3a": "v25a5",
+    "4c4b8cff-43eb-13d3-8f14-96b783c90cd2": "v25a6",
+    # V26 - First half
+    "3ea2b318-423b-cf86-25da-7cbb0eefbe2d": "v26a1",
+    "9d85c932-4820-c060-09c3-668636d4df1b": "v26a2",
+    "ce2783e8-44fc-dd48-3da3-33b5ba6c4a22": "v26a3",
+    # V26 - Second half
+    "4f0864e2-40af-28a4-de2c-0e9e64e75f23": "v26a4",
+    "8102cd81-43a0-d0d7-bd59-47b8fe9bed1b": "v26a5",
+    "d816f426-48ea-f052-117f-9697a155b319": "v26a6",
 }
 
 
@@ -193,29 +213,13 @@ def season_short(season_id: str) -> str:
     return SEASON_MAP.get(season_id, season_id[:4].lower() if season_id else "unknown")
 
 
-def map_mmr_to_henrik(game_name: str, tag_line: str, puuid: str, mmr: dict, updates: list[dict]) -> dict:
+def map_mmr_to_henrik(game_name: str, tag_line: str, puuid: str, mmr: dict, act_id: str = "") -> dict:
     queue = mmr.get("QueueSkills", {}).get("competitive", {})
     seasonal = queue.get("SeasonalInfoBySeasonID", {}) if queue else {}
+    latest_update = mmr.get("LatestCompetitiveUpdate") or {}
 
-    def to_iso(ts_ms: int) -> str:
-        if not ts_ms:
-            return datetime.now(UTC).isoformat().replace("+00:00", "Z")
-        return datetime.fromtimestamp(ts_ms / 1000, tz=UTC).isoformat().replace("+00:00", "Z")
-
-    # Build act_wins from WinsByTier (like Henrik does)
-    def build_act_wins(wins_by_tier: dict, season_short_str: str) -> list[dict]:
-        if not wins_by_tier:
-            return []
-        act_wins = []
-        # WinsByTier is a dict like {"3": 2, "15": 10, ...} where key is tier id
-        for tier_str, count in wins_by_tier.items():
-            tier_id = int(tier_str)
-            for _ in range(count):
-                act_wins.append({"id": tier_id, "name": get_tier_name(tier_id, season_short_str)})
-        
-        # Sort by ID descending (highest rank first)
-        act_wins.sort(key=lambda x: x["id"], reverse=True)
-        return act_wins
+    # Rank protection shields (demotion protection)
+    rank_protection = mmr.get("DerankProtectedGamesRemaining", 0)
 
     # Find peak across ALL seasons by scanning WinsByTier for highest tier
     # (Henrik finds peak by looking at all wins across all seasons, not just end tier)
@@ -237,125 +241,73 @@ def map_mmr_to_henrik(game_name: str, tag_line: str, puuid: str, mmr: dict, upda
                 peak_rr = end_rr
                 peak_season_id = sid
 
-    # Determine ranking schema based on season
-    def get_ranking_schema(season_id: str) -> str:
-        short = season_short(season_id)
-        # Episode 5+ uses ascendant schema
-        if short and short.startswith("e"):
-            try:
-                # Extract episode number from format like "e10a7" or "e5a1"
-                ep_str = short[1:].split('a')[0]
-                ep_num = int(ep_str)
-                if ep_num >= 5:
-                    return "ascendant"
-            except (ValueError, IndexError):
-                pass
-        return "base"
-
-    # Current season data
+    # Current season data - use act_id if provided, otherwise use latest
     current_season_id = None
     current_tier = 0
     current_rr = 0
     current_data = {}
-    latest_competitive_update = mmr.get("LatestCompetitiveUpdate") or {}
+    is_current_act = False
+    
+    # Get the actual current season from LatestCompetitiveUpdate
+    latest_season_id = latest_update.get("SeasonID", "")
     
     if seasonal:
-        # Sort seasons to find current (latest by UUID sort order)
-        sorted_seasons = sorted(seasonal.keys())
-        current_season_id = sorted_seasons[-1]  # Last one is most recent
-        current_data = seasonal[current_season_id]
-        current_tier = current_data.get("CompetitiveTier", 0)
-        current_rr = current_data.get("RankedRating", 0)
+        if act_id:
+            # Find season_id that matches the act_id (e.g., "v25a6" -> UUID)
+            season_uuid = None
+            for uuid, short in SEASON_MAP.items():
+                if short == act_id:
+                    season_uuid = uuid
+                    break
+            
+            if season_uuid and season_uuid in seasonal:
+                current_season_id = season_uuid
+                current_data = seasonal[current_season_id]
+                # Check if this is the current/active season
+                is_current_act = (season_uuid == latest_season_id)
+            else:
+                # Act ID not found in player's data, fall back to latest
+                current_season_id = latest_season_id if latest_season_id in seasonal else sorted(seasonal.keys())[-1]
+                current_data = seasonal.get(current_season_id, {})
+                is_current_act = True
+        else:
+            # No act_id specified - use the current season from LatestCompetitiveUpdate
+            if latest_season_id and latest_season_id in seasonal:
+                current_season_id = latest_season_id
+                current_data = seasonal[current_season_id]
+            else:
+                # Fallback: sort seasons to find most recent
+                sorted_seasons = sorted(seasonal.keys())
+                current_season_id = sorted_seasons[-1]
+                current_data = seasonal[current_season_id]
+            is_current_act = True
+        
+        # Get current RR and tier
+        if is_current_act and latest_update:
+            # For the current/active act, use LatestCompetitiveUpdate for most accurate data
+            current_tier = latest_update.get("TierAfterUpdate", current_data.get("CompetitiveTier", 0))
+            current_rr = latest_update.get("RankedRatingAfterUpdate", 0)
+        else:
+            # For historical acts, use the seasonal data
+            current_tier = current_data.get("CompetitiveTier", 0)
+            current_rr = current_data.get("RankedRating", 0)
 
-    last_change = latest_competitive_update.get("RankedRatingEarned", 0)
-    afk_penalty = latest_competitive_update.get("AFKPenalty", 0)
+    # Leaderboard placement from the selected season's data
+    leaderboard_placement = current_data.get("LeaderboardRank", 0) if current_data else 0
     
-    # Calculate ELO using Henrik's formula
-    # ELO = (tier - 3) * 100 + (rr % 100)
-    # Example: Immortal 3 (26) with 291 RR = (26-3)*100 + 91 = 2300 + 91 = 2391
-    current_elo = ((current_tier - 3) * 100) + (current_rr % 100) if current_tier >= 3 else 0
-
-    # Build seasonal breakdown (sorted chronologically: oldest first)
-    def sort_key_season(sid: str) -> tuple:
-        """Sort seasons chronologically by episode and act"""
-        short = season_short(sid)
-        try:
-            # Extract episode and act from format like "e8a3"
-            if short.startswith("e"):
-                parts = short[1:].split("a")
-                if len(parts) == 2:
-                    ep = int(parts[0])
-                    act = int(parts[1])
-                    return (ep, act)
-        except (ValueError, IndexError):
-            pass
-        return (999, 999)  # Unknown seasons go to the end
-    
-    seasonal_list = []
-    for sid in sorted(seasonal.keys(), key=sort_key_season):
-        short = season_short(sid)
-        # Skip unmapped seasons (those that don't start with 'e')
-        if not short.startswith("e"):
-            continue
-        
-        season_data = seasonal[sid]
-        tier_id = season_data.get("CompetitiveTier", 0)
-        rr = season_data.get("RankedRating", 0)
-        wins = season_data.get("NumberOfWins", 0)
-        games = season_data.get("NumberOfGames", 0)
-        leaderboard_rank = season_data.get("LeaderboardRank", 0)
-        wins_by_tier = season_data.get("WinsByTier")
-        
-        # Build act_wins from WinsByTier
-        act_wins = build_act_wins(wins_by_tier, short)
-        
-        # Find latest update timestamp for this season
-        season_updates = [u for u in updates if u.get("SeasonID") == sid]
-        latest_time = max([u.get("MatchStartTime", 0) for u in season_updates], default=0)
-        
-        seasonal_list.append({
-            "season": {"id": sid, "short": season_short(sid)},
-            "wins": wins,
-            "games": games,
-            "end_tier": {"id": tier_id, "name": get_tier_name(tier_id, short)},
-            "end_rr": rr,
-            "ranking_schema": get_ranking_schema(sid),
-            "leaderboard_placement": {
-                "rank": leaderboard_rank,
-                "updated_at": to_iso(latest_time)
-            } if leaderboard_rank > 0 else None,
-            "act_wins": act_wins
-        })
-
-    output = {
-        "status": 200,
-        "data": {
-            "account": {"name": game_name, "tag": tag_line, "puuid": puuid},
-            "peak": {
-                "season": {"id": peak_season_id or "", "short": season_short(peak_season_id or "")},
-                "ranking_schema": get_ranking_schema(peak_season_id or ""),
-                "tier": {"id": peak_tier, "name": get_tier_name(peak_tier, season_short(peak_season_id or ""))},
-                "rr": peak_rr
-            },
-            "current": {
-                "tier": {"id": current_tier, "name": get_tier_name(current_tier, season_short(current_season_id or ""))},
-                "rr": current_rr,
-                "last_change": last_change,
-                "elo": current_elo,
-                "games_needed_for_rating": queue.get("CurrentSeasonGamesNeededForRating", 0),
-                "rank_protection_shields": current_data.get("RankProtectionFirstPlateau", 0),
-                "leaderboard_placement": {
-                    "rank": current_data.get("LeaderboardRank", 0) if current_data else 0,
-                    "updated_at": to_iso(latest_competitive_update.get("MatchStartTime", 0))
-                } if current_data.get("LeaderboardRank", 0) > 0 else None
-            },
-            "seasonal": seasonal_list
-        }
+    return {
+        "games_needed_for_rating": queue.get("CurrentSeasonGamesNeededForRating", 0),
+        "current_rank": get_tier_name(current_tier, season_short(current_season_id or "")),
+        "current_rr": current_rr,
+        "rank_protection_shields": rank_protection,
+        "leaderboard_placement": leaderboard_placement,
+        "peak_rank": get_tier_name(peak_tier, season_short(peak_season_id or "")),
+        "peak_rr": peak_rr,
+        "peak_act": season_short(peak_season_id or "")
     }
-    return output
 
 
-def get_player_mmr_data(game_name: str, tag_line: str, region: str = "", platform: str = "pc") -> dict:
+def get_player_mmr_data(game_name: str, tag_line: str, region: str = "", platform: str = "pc", act_id: str = "") -> dict:
     """
     Fetch player MMR data in Henrik API format.
     
@@ -364,35 +316,50 @@ def get_player_mmr_data(game_name: str, tag_line: str, region: str = "", platfor
         tag_line: Player's tag (without #)
         region: Region override (na/eu/ap/kr) or empty string to auto-detect
         platform: Platform (pc/console, currently unused)
+        act_id: Act ID to filter data for (optional)
     
     Returns:
         Dict with status and data in Henrik format, or error response
     """
     tokens = cookie_reauth()
     if not tokens or not tokens.get("access_token"):
-        return {"status": 500, "errors": ["auth_failed"]}
+        return {
+            "status": 500,
+            "error": "auth_failed",
+            "message": "Failed to authenticate with Riot servers. Please refresh your cookies."
+        }
 
     access_token = tokens["access_token"]
     id_token = tokens.get("id_token", "")
 
     entitlement = get_entitlement_token(access_token)
     if not entitlement:
-        return {"status": 500, "errors": ["entitlement_failed"]}
+        return {
+            "status": 500,
+            "error": "entitlement_failed",
+            "message": "Failed to get entitlement token from Riot servers."
+        }
 
     detected_region = region or get_player_region(access_token, id_token) or "na"
     shard = region_to_shard(detected_region)
 
     puuid = get_puuid_by_name(game_name, tag_line, access_token)
     if not puuid:
-        return {"status": 404, "errors": ["player_not_found"]}
+        return {
+            "status": 404,
+            "error": "player_not_found",
+            "message": f"Player '{game_name}#{tag_line}' not found. Please check the name and tag."
+        }
 
     mmr = get_player_mmr(puuid, access_token, entitlement, shard)
     if not mmr:
-        return {"status": 502, "errors": ["mmr_fetch_failed"]}
+        return {
+            "status": 502,
+            "error": "mmr_fetch_failed",
+            "message": f"Failed to fetch MMR data for player '{game_name}#{tag_line}'."
+        }
 
-    updates = get_competitive_updates(puuid, access_token, entitlement, shard)
-
-    return map_mmr_to_henrik(game_name, tag_line, puuid, mmr, updates)
+    return map_mmr_to_henrik(game_name, tag_line, puuid, mmr, act_id)
 
 
 def main():

@@ -2,7 +2,7 @@ from get_valo_mmr import get_player_mmr_data
 
 import json
 
-result = get_player_mmr_data("Abu", "Fatum", "ap", "pc")
+result = get_player_mmr_data("abu", "fatum", "ap", "pc", "v25a6")
 
 
 test = json.dumps(result, indent=4)
