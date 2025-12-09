@@ -1,4 +1,4 @@
-from valo_mmr import get_player_mmr_data
+from get_valo_mmr import get_player_mmr_data
 
 import json
 
