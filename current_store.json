@@ -1,0 +1,113 @@
+{
+  "daily_shop": [
+    {
+      "name": "Holomoku Vandal",
+      "uuid": "08196688-4fd7-16f5-885c-97b8543ee8a0",
+      "type": "Skin",
+      "price": "1275 VP",
+      "offer_id": "08196688-4fd7-16f5-885c-97b8543ee8a0"
+    },
+    {
+      "name": "Prime Vandal",
+      "uuid": "c9678d8c-4327-f397-b0ec-dca3c3d6fb15",
+      "type": "Skin",
+      "price": "1775 VP",
+      "offer_id": "c9678d8c-4327-f397-b0ec-dca3c3d6fb15"
+    },
+    {
+      "name": "Neptune Phantom",
+      "uuid": "b52673c5-4494-0fc4-db5a-7ea686b63569",
+      "type": "Skin",
+      "price": "1775 VP",
+      "offer_id": "b52673c5-4494-0fc4-db5a-7ea686b63569"
+    },
+    {
+      "name": "Convex Operator",
+      "uuid": "ed333b00-4e88-a9c5-d309-acae85438e93",
+      "type": "Skin",
+      "price": "875 VP",
+      "offer_id": "ed333b00-4e88-a9c5-d309-acae85438e93"
+    }
+  ],
+  "featured_bundle": {
+    "name": "Mystbloom",
+    "uuid": "bae9a7b5-4009-67f8-0794-96b3646147fb",
+    "price": "8700 VP",
+    "items": [
+      {
+        "name": "6baab51b-4e75-bf9d-b67a-628d313043df",
+        "uuid": "6baab51b-4e75-bf9d-b67a-628d313043df",
+        "type": "Gun Buddy",
+        "price": "0 VP"
+      },
+      {
+        "name": "a0ba816f-40d1-2108-b865-44b3b319a46c",
+        "uuid": "a0ba816f-40d1-2108-b865-44b3b319a46c",
+        "type": "Player Card",
+        "price": "0 VP"
+      },
+      {
+        "name": "accbdccf-41df-993a-87d2-8287556b7991",
+        "uuid": "accbdccf-41df-993a-87d2-8287556b7991",
+        "type": "Unknown",
+        "price": "0 VP"
+      },
+      {
+        "name": "Mystbloom Ares",
+        "uuid": "31a074a4-4b4f-3042-1054-c7ad29d1234f",
+        "type": "Skin",
+        "price": "2175 VP"
+      },
+      {
+        "name": "Mystbloom Vandal",
+        "uuid": "16de4787-4eb9-e407-7cb7-17b01096be4a",
+        "type": "Skin",
+        "price": "2175 VP"
+      },
+      {
+        "name": "Mystbloom Ghost",
+        "uuid": "a0b30a5d-49c7-6b07-0f3f-f39ed105fc7a",
+        "type": "Skin",
+        "price": "2175 VP"
+      },
+      {
+        "name": "Mystbloom Outlaw",
+        "uuid": "a5796d39-4071-3f56-0b06-0a89abdd130b",
+        "type": "Skin",
+        "price": "2175 VP"
+      },
+      {
+        "name": "Mystbloom Fanblade",
+        "uuid": "ee14b56f-418f-abf1-2dcb-75846a55f91f",
+        "type": "Skin",
+        "price": "0 VP"
+      }
+    ],
+    "time_remaining": "2d 16h 10m"
+  },
+  "night_market": null,
+  "accessory_store": [
+    {
+      "uuid": "4c08026b-4f56-9494-0d71-3dbb291c4d7f",
+      "type": "Unknown",
+      "price": "6000 KC"
+    },
+    {
+      "uuid": "ad5f8263-4434-b764-bfb7-49b145277deb",
+      "type": "Unknown",
+      "price": "4000 KC"
+    },
+    {
+      "uuid": "bc43bebc-4dd2-84e2-67c5-bbaec817aa84",
+      "type": "Unknown",
+      "price": "4000 KC"
+    },
+    {
+      "uuid": "ca080c7c-4071-4211-d46d-5c8396aa04f4",
+      "type": "Unknown",
+      "price": "4000 KC"
+    }
+  ],
+  "daily_shop_time_remaining": "18h 10m",
+  "accessory_store_time_remaining": "18h 10m"
+}

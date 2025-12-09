@@ -102,10 +102,68 @@ Endpoints are commonly found from the ShooterGame log located at `%LocalAppData%
 
 | Endpoint | Description |
 | :--- | :--- |
-| [GET Prices](https://valapidocs.techchrism.me/endpoint/prices) | Get item prices |
-| [GET Storefront](https://valapidocs.techchrism.me/endpoint/storefront) | Get player store (daily shop, bundle) |
+| ~~[GET Prices](https://valapidocs.techchrism.me/endpoint/prices)~~ | ⚠️ **DEPRECATED** - Returns 404, no longer available |
+| [**POST** Storefront](https://valapidocs.techchrism.me/endpoint/storefront) | Get player store (daily shop, bundle, night market) |
 | [GET Wallet](https://valapidocs.techchrism.me/endpoint/wallet) | Get player wallet (VP, Radianite) |
 | [GET Owned Items](https://valapidocs.techchrism.me/endpoint/owned-items) | Get owned items |
+
+### Storefront Endpoint Details
+
+> ⚠️ **Important**: The documentation shows `GET /store/v2/storefront/{puuid}` but this is **outdated**.
+> The actual working endpoint is `POST /store/v3/storefront/{puuid}` with an empty JSON body `{}`.
+
+**URL:** `https://pd.{shard}.a.pvp.net/store/v3/storefront/{puuid}`
+
+**Method:** `POST`
+
+**Request Body:** `{}` (empty JSON object)
+
+**Headers:**
+- `X-Riot-ClientPlatform`: Base64-encoded client platform JSON
+- `X-Riot-ClientVersion`: Current client version (e.g., from valorant-api.com/v1/version)
+- `X-Riot-Entitlements-JWT`: Entitlement token from POST /entitlements/v1/token
+- `Authorization`: Bearer {access_token}
+- `Content-Type`: application/json
+
+**Response Structure:**
+```typescript
+{
+    FeaturedBundle: {
+        Bundle: { /* Current featured bundle */ },
+        Bundles: [ /* All available bundles */ ],
+        BundleRemainingDurationInSeconds: number
+    },
+    SkinsPanelLayout: {
+        SingleItemOffers: string[],           // 4 skin UUIDs
+        SingleItemStoreOffers: Offer[],       // Offer details with prices
+        SingleItemOffersRemainingDurationInSeconds: number
+    },
+    UpgradeCurrencyStore: {
+        UpgradeCurrencyOffers: Offer[]        // Radianite offers
+    },
+    AccessoryStore: {
+        AccessoryStoreOffers: Offer[],        // Gun buddies, sprays, etc.
+        AccessoryStoreRemainingDurationInSeconds: number
+    },
+    BonusStore?: {                            // Night Market (when active)
+        BonusStoreOffers: Offer[],
+        BonusStoreRemainingDurationInSeconds: number
+    }
+}
+```
+
+**Currency IDs:**
+- `85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741` - VP (Valorant Points)
+- `e59aa87c-4cbf-517a-5983-6e81511be9b7` - Radianite Points
+- `85ca954a-41f2-ce94-9b45-8ca3dd39a00d` - Kingdom Credits
+
+**Item Type IDs:**
+- `e7c63390-eda7-46e0-bb7a-a6abdacd2433` - Skin Level
+- `3ad1b2b2-acdb-4524-852f-954a76ddae0a` - Skin Chroma
+- `dd3bf334-87f3-40bd-b043-682a57a8dc3a` - Gun Buddy Level
+- `d5f120f8-ff8c-4571-a619-8a72ef53cfdb` - Spray
+- `3f296c07-64c3-494c-923b-fe692a4fa1bd` - Player Card
+- `de7caa6b-adf7-4588-bbd1-143831e786c6` - Player Title
 
 ## Pre-Game Endpoints
 
@@ -171,3 +229,4 @@ Endpoints are commonly found from the ShooterGame log located at `%LocalAppData%
 | Endpoint | Description |
 | :--- | :--- |
 | [TCP XMPP Connection](https://valapidocs.techchrism.me/endpoint/xmpp-connection) | XMPP Connection details |
+

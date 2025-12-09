@@ -3,11 +3,13 @@ import sys
 from datetime import datetime, UTC
 import requests
 
-from cookies import cookie_reauth
-
-# Static client platform (base64 encoded JSON)
-CLIENT_PLATFORM = (
-    "ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9"
+from valo_api_utils import (
+    CLIENT_PLATFORM,
+    get_entitlement_token,
+    get_client_version,
+    get_player_region,
+    region_to_shard,
+    cookie_reauth,
 )
 
 # Competitive tier mapping from Riot tier numbers to readable names
@@ -118,40 +120,6 @@ SEASON_MAP = {
     "8102cd81-43a0-d0d7-bd59-47b8fe9bed1b": "v26a5",
     "d816f426-48ea-f052-117f-9697a155b319": "v26a6",
 }
-
-
-def get_entitlement_token(access_token: str):
-    url = "https://entitlements.auth.riotgames.com/api/token/v1"
-    headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
-    res = requests.post(url, headers=headers, json={})
-    if res.status_code != 200:
-        return None
-    return res.json().get("entitlements_token")
-
-
-def get_client_version():
-    url = "https://valorant-api.com/v1/version"
-    try:
-        res = requests.get(url, timeout=5)
-        if res.status_code == 200:
-            return res.json()["data"].get("riotClientVersion")
-    except Exception:
-        pass
-    return "release-10.00-shipping-9-2555555"
-
-
-def get_player_region(access_token: str, id_token: str):
-    url = "https://riot-geo.pas.si.riotgames.com/pas/v1/product/valorant"
-    headers = {"Authorization": f"Bearer {access_token}"}
-    res = requests.put(url, headers=headers, json={"id_token": id_token})
-    if res.status_code != 200:
-        return None
-    return res.json().get("affinities", {}).get("live")
-
-
-def region_to_shard(region: str):
-    shard_map = {"latam": "na", "br": "na", "na": "na", "pbe": "pbe", "eu": "eu", "ap": "ap", "kr": "kr"}
-    return shard_map.get(region, "na")
 
 
 def get_puuid_by_name(game_name: str, tag_line: str, access_token: str):
